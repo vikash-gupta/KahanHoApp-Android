@@ -1,3 +1,4 @@
+/*
 package theguywith3thumbs.kahanho;
 import android.content.Context;
 import android.util.Log;
@@ -18,9 +19,11 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+*/
 /**
  * Created by home on 28/10/15.
- */
+ *//*
+
 public class LocationUploader {
 
     private String URL;
@@ -90,3 +93,4 @@ public class LocationUploader {
 
     }
 }
+*/

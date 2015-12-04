@@ -21,7 +21,29 @@
         android:layout_height="wrap_content"
         android:text="Enable/Disable"
         android:id="@+id/toggleButton"
-        android:layout_centerVertical="true"
+        android:layout_below="@+id/textView"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="47dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter the full incoming number e.g. +911234567890"
+        android:id="@+id/textView"
+        android:layout_below="@+id/numberRegex"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="42dp"
+        android:layout_alignRight="@+id/numberRegex"
+        android:layout_alignEnd="@+id/numberRegex" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick from call log"
+        android:id="@+id/button"
+        android:layout_alignBottom="@+id/toggleButton"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView" />
 </RelativeLayout>

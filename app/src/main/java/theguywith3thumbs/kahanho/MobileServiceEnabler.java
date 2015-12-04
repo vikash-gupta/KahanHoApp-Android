@@ -2,6 +2,8 @@ package theguywith3thumbs.kahanho;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -12,7 +14,9 @@ import java.lang.reflect.Method;
  */
 public class MobileServiceEnabler {
 
-    public void setMobileDataEnabled(Context context, boolean enabled) {
+    public void toggleMobileData(Context context, boolean enabled) {
+
+
         final ConnectivityManager conman =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         try {
@@ -38,5 +42,18 @@ public class MobileServiceEnabler {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void toggleWifi(Context context, boolean status)
+    {
+        WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(status);
     }
 }
