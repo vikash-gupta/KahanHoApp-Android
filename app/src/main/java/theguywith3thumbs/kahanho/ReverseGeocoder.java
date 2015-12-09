@@ -90,7 +90,8 @@ public class ReverseGeocoder {
                 .setContentTitle("Sms sent to " + Caller.number)
                 .setContentText(msg)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pIntent);
+                //.setContentIntent(pIntent)
+                ;
 
         Notification noti;
         if (Build.VERSION.SDK_INT < 16) {
