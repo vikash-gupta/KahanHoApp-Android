@@ -22,7 +22,7 @@ public class InComingCallListener extends PhoneStateListener {
     public void onCallStateChanged(int state, String incomingNumber) {
 
         //
-        Log.i(Constants.AppNameForLogging, "onCallStateChanged");
+        //Log.i(Constants.AppNameForLogging, "onCallStateChanged");
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:
                 if (CallMissed() && Caller.number.equalsIgnoreCase(incomingNumber))
@@ -48,16 +48,16 @@ public class InComingCallListener extends PhoneStateListener {
                                 new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));*/
                     }
                 }
-                Log.i(Constants.AppNameForLogging, "idle" + "ring=" + ring + " callreceived= " + callReceived);
+                //Log.i(Constants.AppNameForLogging, "idle" + "ring=" + ring + " callreceived= " + callReceived);
                 ring = callReceived = false;
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
-                Log.i(Constants.AppNameForLogging, "CALL_STATE_OFFHOOK");
+                //Log.i(Constants.AppNameForLogging, "CALL_STATE_OFFHOOK");
                 callReceived = true;
 
                 break;
             case TelephonyManager.CALL_STATE_RINGING:
-                Log.i(Constants.AppNameForLogging, "CALL_STATE_RINGING");
+                //Log.i(Constants.AppNameForLogging, "CALL_STATE_RINGING");
                 ring = true;
 
                 break;

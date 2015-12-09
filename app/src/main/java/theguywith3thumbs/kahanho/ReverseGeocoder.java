@@ -1,6 +1,11 @@
 package theguywith3thumbs.kahanho;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
 import android.telephony.SmsManager;
 import android.util.Log;
 
@@ -70,8 +75,37 @@ public class ReverseGeocoder {
             MobileServiceEnabler enabler = new MobileServiceEnabler();
             enabler.toggleMobileData(activityContext,false);
         }
+        SendNotification(msg);
     }
 
+    private void SendNotification(String msg)
+    {
+        Intent intent = new Intent(activityContext, MainActivity.class);
+        PendingIntent pIntent = PendingIntent.getActivity(activityContext, (int) System.currentTimeMillis(), intent, 0);
+
+        // Build notification
+        // Actions are just fake
+
+        Notification.Builder builder = new Notification.Builder(activityContext)
+                .setContentTitle("Sms sent to " + Caller.number)
+                .setContentText(msg)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentIntent(pIntent);
+
+        Notification noti;
+        if (Build.VERSION.SDK_INT < 16) {
+            noti = builder.getNotification();
+        } else {
+            noti = builder.build();
+        }
+
+        NotificationManager notificationManager = (NotificationManager) activityContext.
+                getSystemService(activityContext.NOTIFICATION_SERVICE);
+        // hide the notification after its selected
+        noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(0, noti);
+    }
     private void SendMessage(String location)
     {
         String address = null;
