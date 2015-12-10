@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Enter the full incoming number e.g. +911234567890"
+        android:text="Enter the caller number e.g. +911234567890. On a missed call from that caller your location will be sent to that caller."
         android:id="@+id/textView"
         android:layout_below="@+id/numberRegex"
         android:layout_alignParentLeft="true"

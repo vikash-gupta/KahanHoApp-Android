@@ -26,14 +26,14 @@ public class LocationTracer {
         try {
             Criteria criteria = new Criteria();
             String provider = mLocationManager.getBestProvider(criteria, false);
-            Log.d(Constants.AppNameForLogging, "Getting location from " + provider + " provider");
+            Logger.d(Constants.AppNameForLogging, "Getting location from " + provider + " provider");
             
             mLocationManager.requestSingleUpdate(provider, mLocationListener, null);
         }
         catch(SecurityException e)
         {
-            Log.e(Constants.AppNameForLogging,"Couldn't get location");
-            Log.e(Constants.AppNameForLogging,e.toString());
+            Logger.e(Constants.AppNameForLogging,"Couldn't get location");
+            Logger.e(Constants.AppNameForLogging,e.toString());
         }
     }
 
@@ -64,8 +64,8 @@ public class LocationTracer {
     {
         double lat = location.getLatitude();
         double lon = location.getLongitude();
-        Log.i(Constants.AppNameForLogging,"Latitude= " + String.valueOf(lat));
-        Log.i(Constants.AppNameForLogging,"Longitude= " + String.valueOf(lon));
+        Logger.i(Constants.AppNameForLogging,"Latitude= " + String.valueOf(lat));
+        Logger.i(Constants.AppNameForLogging,"Longitude= " + String.valueOf(lon));
 
         ReverseGeocoder r = new ReverseGeocoder(activityContext);
         r.Geocode(lat,lon);

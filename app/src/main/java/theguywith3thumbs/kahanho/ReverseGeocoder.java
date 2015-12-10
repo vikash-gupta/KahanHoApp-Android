@@ -43,15 +43,15 @@ public class ReverseGeocoder {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d(Constants.AppNameForLogging, "Got reverse geocoding response");
-                        Log.v(Constants.AppNameForLogging, response);
+                        Logger.d(Constants.AppNameForLogging, "Got reverse geocoding response");
+                        Logger.v(Constants.AppNameForLogging, response);
                         SendMessage(response);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e(Constants.AppNameForLogging,"Couldn't send request due to below error");
-                Log.e(Constants.AppNameForLogging,error.toString());
+                Logger.e(Constants.AppNameForLogging,"Couldn't send request due to below error");
+                Logger.e(Constants.AppNameForLogging,error.toString());
 
                 SendLatLonMsg();
             }
@@ -64,6 +64,7 @@ public class ReverseGeocoder {
     {
         String msg = "Couldn't get street address, follow link to get my current location " + baseURL;
         SendSms(msg);
+        SendNotification("Location not sent","Reverse geocoding error");
     }
     private void SendSms(String msg)
     {
@@ -75,10 +76,9 @@ public class ReverseGeocoder {
             MobileServiceEnabler enabler = new MobileServiceEnabler();
             enabler.toggleMobileData(activityContext,false);
         }
-        SendNotification(msg);
     }
 
-    private void SendNotification(String msg)
+    private void SendNotification(String title, String msg)
     {
         Intent intent = new Intent(activityContext, MainActivity.class);
         PendingIntent pIntent = PendingIntent.getActivity(activityContext, (int) System.currentTimeMillis(), intent, 0);
@@ -87,7 +87,7 @@ public class ReverseGeocoder {
         // Actions are just fake
 
         Notification.Builder builder = new Notification.Builder(activityContext)
-                .setContentTitle("Sms sent to " + Caller.number)
+                .setContentTitle(title)
                 .setContentText(msg)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 //.setContentIntent(pIntent)
@@ -117,7 +117,7 @@ public class ReverseGeocoder {
             address = result.getString("formatted_address");
         } catch (JSONException e) {
             //e.printStackTrace();
-            Log.e(Constants.AppNameForLogging,e.getMessage());
+            Logger.e(Constants.AppNameForLogging,e.getMessage());
         }
 
         if(address == null)
@@ -126,9 +126,10 @@ public class ReverseGeocoder {
             return;
         }
 
-        Log.i(Constants.AppNameForLogging, "Sending current location: " + address + " to " + Caller.number);
+        Logger.i(Constants.AppNameForLogging, "Sending current location: " + address + " to " + Caller.number);
 
         SendSms("My current location is " + address);
+        SendNotification("Location sent to " + Caller.number,address);
 
     }
 }

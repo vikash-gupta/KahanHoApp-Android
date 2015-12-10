@@ -26,7 +26,7 @@ public class DataEnabledReceiver extends BroadcastReceiver {
                     ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
 
             if (!noConnectivity) {
-                Log.d(Constants.AppNameForLogging, "Mobile Data turned on");
+                Logger.d(Constants.AppNameForLogging, "Mobile Data turned on");
                 LocationTracer tracer = new LocationTracer(context);
                 tracer.GetLocation();
             }

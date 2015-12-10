@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
                     Caller.number = inputNumberPattern.getText().toString();
 
                     if(phoneListener ==null) {
-                        Log.i(Constants.AppNameForLogging, "Registering incoming call listener");
+                        Logger.i(Constants.AppNameForLogging, "Registering incoming call listener");
                         Context context = getApplicationContext();
                         TelephonyManager telephony = (TelephonyManager) context
                                 .getSystemService(Context.TELEPHONY_SERVICE);
@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
                 } else {
                     Caller.number = null;
 
-                    Log.i(Constants.AppNameForLogging, "Deregistering incoming call listener");
+                    Logger.i(Constants.AppNameForLogging, "Deregistering incoming call listener");
                     Context context = getApplicationContext();
                     TelephonyManager telephony = (TelephonyManager) context
                             .getSystemService(Context.TELEPHONY_SERVICE);
@@ -125,7 +125,7 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -138,6 +138,6 @@ public class MainActivity extends Activity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
 }

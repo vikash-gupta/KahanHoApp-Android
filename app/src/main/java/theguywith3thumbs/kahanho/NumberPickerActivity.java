@@ -67,7 +67,7 @@ public class NumberPickerActivity
 
                 String selectedNumber = callLog_cursor.getString(callLog_cursor
                                 .getColumnIndex(android.provider.CallLog.Calls.NUMBER));
-                Log.d(Constants.AppNameForLogging,"Selected number from call log is " + selectedNumber);
+                Logger.d(Constants.AppNameForLogging,"Selected number from call log is " + selectedNumber);
 
                 Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 // sending data to new activity
