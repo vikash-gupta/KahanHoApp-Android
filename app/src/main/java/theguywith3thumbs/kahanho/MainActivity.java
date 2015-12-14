@@ -1,9 +1,12 @@
 package theguywith3thumbs.kahanho;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.view.Menu;
@@ -20,21 +23,41 @@ import android.util.Log;
 
 public class MainActivity extends Activity {
 
-    static InComingCallListener phoneListener;
+    private BackgroundService s;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = getIntent();
-        if(intent !=null)
-        {
-            String trackerNumber = intent.getStringExtra(Constants.CallerNumber);
-            EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
-            inputNumberPattern.setText(trackerNumber);
-        }
+        //Intent intent= new Intent(this, BackgroundService.class);
+        //bindService(intent, mConnection,
+          //      Context.BIND_AUTO_CREATE);
+
+        ChekIfServiceRunning();
+        CheckIfComingFromNumberPicker();
         SetupButtonClickHandler();
         SetupToggleButtonHandler();
 
+    }
+
+    private void CheckIfComingFromNumberPicker() {
+        Intent intent = getIntent();
+        if(intent !=null) {
+            String trackerNumber = intent.getStringExtra(Constants.CallerNumber);
+            Logger.i(Constants.AppNameForLogging, "coming fron number picker");
+            if(trackerNumber !=null) {
+                EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
+                inputNumberPattern.setText(trackerNumber);
+            }
+        }
+    }
+
+    private void ChekIfServiceRunning() {
+        if(BackgroundService.number != null)
+        {
+            Logger.i(Constants.AppNameForLogging, "Service is running");
+            EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
+            inputNumberPattern.setText(BackgroundService.number);
+        }
     }
 
     private void SetupButtonClickHandler() {
@@ -48,16 +71,29 @@ public class MainActivity extends Activity {
         });
     }
 
-/*    @Override
-    protected void onStart() {
-        super.onStart();
-    }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-    }*/
+    /*private ServiceConnection mConnection = new ServiceConnection() {
 
+        public void onServiceConnected(ComponentName className,
+                                       IBinder binder) {
+            BackgroundService.MyBinder b = (BackgroundService.MyBinder) binder;
+            s = b.getService();
+            String number = s.getTracker();
+        *//*Intent intent = getIntent();
+        if(intent !=null)
+        {
+            String trackerNumber = intent.getStringExtra(Constants.CallerNumber);
+            EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
+            inputNumberPattern.setText(trackerNumber);
+        }*//*
+
+
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            s = null;
+        }
+    };*/
     private void SetupToggleButtonHandler()
     {
         ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
@@ -76,27 +112,22 @@ public class MainActivity extends Activity {
 
                 if (isChecked) {
                     // The toggle is enabled
-                    Caller.number = inputNumberPattern.getText().toString();
+                    String number = inputNumberPattern.getText().toString();
 
-                    if(phoneListener ==null) {
-                        Logger.i(Constants.AppNameForLogging, "Registering incoming call listener");
-                        Context context = getApplicationContext();
-                        TelephonyManager telephony = (TelephonyManager) context
-                                .getSystemService(Context.TELEPHONY_SERVICE);
-                        phoneListener = new InComingCallListener(context);
-                        telephony.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
-                        ShowToast(true,Caller.number);
-                    }
+                    Logger.i(Constants.AppNameForLogging, "Registering incoming call listener");
+                    Context context = getApplicationContext();
+
+                    Intent i= new Intent(context, BackgroundService.class);
+                    i.putExtra(Constants.CallerNumber, number);
+                    context.startService(i);
+
+                    ShowToast(true,number);
 
                 } else {
-                    Caller.number = null;
-
                     Logger.i(Constants.AppNameForLogging, "Deregistering incoming call listener");
                     Context context = getApplicationContext();
-                    TelephonyManager telephony = (TelephonyManager) context
-                            .getSystemService(Context.TELEPHONY_SERVICE);
-                    telephony.listen(phoneListener, PhoneStateListener.LISTEN_NONE);
-                    phoneListener = null;
+                    Intent i= new Intent(context, BackgroundService.class);
+                    context.stopService(i);
                     ShowToast(false,null);
 
                 }
@@ -140,4 +171,9 @@ public class MainActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }*/
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Logger.i(Constants.AppNameForLogging, "Destroying main activity");
+    }
 }

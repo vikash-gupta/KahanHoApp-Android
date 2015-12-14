@@ -32,7 +32,8 @@ public class ReverseGeocoder {
     public void Geocode(double lat, double lon)
     {
         baseURL += String.valueOf(lat) + ',' + String.valueOf(lon);
-        sendRequest();
+        //sendRequest();
+        Logger.i(Constants.AppNameForLogging, "inside reverse geocoding");
     }
 
     private void sendRequest()
