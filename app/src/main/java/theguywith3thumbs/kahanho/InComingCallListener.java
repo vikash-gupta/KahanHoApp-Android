@@ -17,20 +17,17 @@ public class InComingCallListener extends PhoneStateListener {
     public InComingCallListener(Context context)
     {
         activityContext = context;
+        Logger.i(Constants.AppNameForLogging, "InComingCallListener");
     }
 
     public void onCallStateChanged(int state, String incomingNumber) {
 
-        //
-        //Logger.i(Constants.AppNameForLogging, "onCallStateChanged");
+        Logger.i(Constants.AppNameForLogging, "onCallStateChanged");
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:
                 if (CallMissed() && Caller.number.equalsIgnoreCase(incomingNumber))
                 {
                     Logger.i(Constants.AppNameForLogging, "Call missed from tracker number " + incomingNumber);
-                    //String msg = Caller.number + " is calling";
-                    //toast = Toast.makeText(activityContext, msg, Toast.LENGTH_SHORT);
-                    //toast.show();
                     MobileServiceEnabler enabler = new MobileServiceEnabler();
                     if (enabler.isNetworkAvailable(activityContext))
                     {
@@ -48,16 +45,16 @@ public class InComingCallListener extends PhoneStateListener {
                                 new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));*/
                     }
                 }
-                //Logger.i(Constants.AppNameForLogging, "idle" + "ring=" + ring + " callreceived= " + callReceived);
+                Logger.i(Constants.AppNameForLogging, "call missed = " + CallMissed() + "tracker =" + Caller.number);
                 ring = callReceived = false;
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:
-                //Logger.i(Constants.AppNameForLogging, "CALL_STATE_OFFHOOK");
+                Logger.i(Constants.AppNameForLogging, "CALL_STATE_OFFHOOK");
                 callReceived = true;
 
                 break;
             case TelephonyManager.CALL_STATE_RINGING:
-                //Logger.i(Constants.AppNameForLogging, "CALL_STATE_RINGING");
+                Logger.i(Constants.AppNameForLogging, "CALL_STATE_RINGING");
                 ring = true;
 
                 break;
