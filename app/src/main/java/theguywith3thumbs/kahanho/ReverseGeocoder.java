@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.telephony.SmsManager;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -32,8 +31,8 @@ public class ReverseGeocoder {
     public void Geocode(double lat, double lon)
     {
         baseURL += String.valueOf(lat) + ',' + String.valueOf(lon);
-        //sendRequest();
         Logger.i(Constants.AppNameForLogging, "inside reverse geocoding");
+        sendRequest();
     }
 
     private void sendRequest()
@@ -65,12 +64,12 @@ public class ReverseGeocoder {
     {
         String msg = "Couldn't get street address, follow link to get my current location " + baseURL;
         SendSms(msg);
-        SendNotification("Location not sent","Reverse geocoding error");
+        SendNotification("Location not sent","Reverse geo-coding error");
     }
     private void SendSms(String msg)
     {
         SmsManager smsManager = SmsManager.getDefault();
-        smsManager.sendTextMessage(Caller.number, null, msg, null, null);
+        smsManager.sendTextMessage(BackgroundService.number, null, msg, null, null);
 
         if(MobileDataState.WasTurnedOn)
         {
@@ -82,10 +81,7 @@ public class ReverseGeocoder {
     private void SendNotification(String title, String msg)
     {
         Intent intent = new Intent(activityContext, MainActivity.class);
-        PendingIntent pIntent = PendingIntent.getActivity(activityContext, (int) System.currentTimeMillis(), intent, 0);
-
-        // Build notification
-        // Actions are just fake
+        //PendingIntent pIntent = PendingIntent.getActivity(activityContext, (int) System.currentTimeMillis(), intent, 0); TODO
 
         Notification.Builder builder = new Notification.Builder(activityContext)
                 .setContentTitle(title)
@@ -127,10 +123,10 @@ public class ReverseGeocoder {
             return;
         }
 
-        Logger.i(Constants.AppNameForLogging, "Sending current location: " + address + " to " + Caller.number);
+        Logger.i(Constants.AppNameForLogging, "Sending current location: " + address + " to " + BackgroundService.number);
 
         SendSms("My current location is " + address);
-        SendNotification("Location sent to " + Caller.number,address);
+        SendNotification("Location sent to " + BackgroundService.number,address);
 
     }
 }

@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
 
 /**
  * Created by home on 4/12/15.
@@ -18,33 +17,6 @@ public class NumberPickerActivity
         super.onCreate(savedInstanceState);
 
         getCallLog();
-
-        // storing string resources into Array
-        /*String[] numbers = {"one","two","three","four"};
-        // here you store the array of string you got from the database
-
-        // Binding Array to ListAdapter
-        this.setListAdapter(new ArrayAdapter<String>(this, R.layout.activity_call_log,R.id.textView2,numbers));
-
-        // refer the ArrayAdapter Document in developer.android.com
-        ListView lv = getListView();
-
-        // listening to single list item on click
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
-
-                // selected item
-                //String num = ((TextView) view).getText().toString();
-                String num = (String) parent.getItemAtPosition(position);
-                // Launching new Activity on selecting single List Item
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
-                // sending data to new activity
-                i.putExtra(Constants.CallerNumber, num);
-                startActivity(i);
-
-            }
-        });*/
     }
 
     public void getCallLog() {
@@ -69,10 +41,16 @@ public class NumberPickerActivity
                                 .getColumnIndex(android.provider.CallLog.Calls.NUMBER));
                 Logger.d(Constants.AppNameForLogging,"Selected number from call log is " + selectedNumber);
 
-                Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                /*Intent i = new Intent(getApplicationContext(), MainActivity.class);
                 // sending data to new activity
                 i.putExtra(Constants.CallerNumber, selectedNumber);
                 startActivity(i);
+*/
+                Intent intent = new Intent();
+                intent.putExtra(Constants.CallerNumber, selectedNumber);
+                setResult(Constants.NumberPickerIntent, intent);
+                finish(); //That's when you onActivityResult() in the main activity will be called
+
 
                 callLog_cursor.close();
             }

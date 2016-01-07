@@ -3,6 +3,7 @@ package theguywith3thumbs.kahanho;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.telephony.PhoneStateListener;
@@ -14,23 +15,24 @@ public class BackgroundService extends Service {
     InComingCallListener phoneListener;
     private final IBinder mBinder = new MyBinder();
     TelephonyManager telephony;
-    static String number;
+    static String number; // hack to check if service is running
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String n = intent.getStringExtra(Constants.CallerNumber);
+        SharedPreferences settings = getSharedPreferences(Constants.SharedPreferencesFile, 0);
+        String n = settings.getString(Constants.CallerNumber, null);
 
-
-        Logger.i(Constants.AppNameForLogging, "service called with tracker-" + n);
-        if(n!=null && !n.equalsIgnoreCase(number)) { // considering re-entry
+        if(n!=null && !n.equalsIgnoreCase(number) && phoneListener ==null) { // considering re-entry
+            Logger.i(Constants.AppNameForLogging, "service called with tracker-" + n);
             telephony = (TelephonyManager) this
                     .getSystemService(Context.TELEPHONY_SERVICE);
-            //telephony.listen(null, PhoneStateListener.LISTEN_NONE);
-            number = Caller.number = n;
-            Logger.i(Constants.AppNameForLogging, Caller.number);
+            //telephony.listen(phoneListener, PhoneStateListener.LISTEN_NONE);
+
+            number = n;
+            Logger.i(Constants.AppNameForLogging, number);
             phoneListener = new InComingCallListener(this);
             telephony.listen(phoneListener, PhoneStateListener.LISTEN_CALL_STATE);
         }
-        return Service.START_REDELIVER_INTENT;
+        return Service.START_STICKY;
     }
 
     @Override
@@ -44,14 +46,12 @@ public class BackgroundService extends Service {
         }
     }
 
-    public String getTracker()
-    {
-        return number;
-    }
     @Override
     public void onDestroy ()
     {
-        telephony.listen(null, PhoneStateListener.LISTEN_NONE);
-        number = Caller.number = null;
+        if(telephony!=null)
+            telephony.listen(phoneListener, PhoneStateListener.LISTEN_NONE);
+        number = null;
+        phoneListener = null;
     }
 }

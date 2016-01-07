@@ -3,14 +3,12 @@ package theguywith3thumbs.kahanho;
 import android.content.Context;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 import android.widget.Toast;
 
 
 public class InComingCallListener extends PhoneStateListener {
 
     private Context activityContext;
-    Toast toast = null;
     boolean ring = false;
     boolean callReceived = false;
 
@@ -25,7 +23,7 @@ public class InComingCallListener extends PhoneStateListener {
         Logger.i(Constants.AppNameForLogging, "onCallStateChanged");
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:
-                if (CallMissed() && Caller.number.equalsIgnoreCase(incomingNumber))
+                if (CallMissed() && BackgroundService.number.equalsIgnoreCase(incomingNumber))
                 {
                     Logger.i(Constants.AppNameForLogging, "Call missed from tracker number " + incomingNumber);
                     MobileServiceEnabler enabler = new MobileServiceEnabler();
@@ -45,7 +43,7 @@ public class InComingCallListener extends PhoneStateListener {
                                 new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE"));*/
                     }
                 }
-                Logger.i(Constants.AppNameForLogging, "call missed = " + CallMissed() + "tracker =" + Caller.number);
+                Logger.i(Constants.AppNameForLogging, "call missed = " + CallMissed() + "tracker =" + BackgroundService.number);
                 ring = callReceived = false;
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:

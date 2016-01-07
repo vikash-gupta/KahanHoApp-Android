@@ -1,16 +1,11 @@
 package theguywith3thumbs.kahanho;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -18,45 +13,28 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import android.util.Log;
-
 
 public class MainActivity extends Activity {
 
-    private BackgroundService s;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //Intent intent= new Intent(this, BackgroundService.class);
-        //bindService(intent, mConnection,
-          //      Context.BIND_AUTO_CREATE);
 
-        ChekIfServiceRunning();
-        CheckIfComingFromNumberPicker();
+        CheckIfServiceRunning();
         SetupButtonClickHandler();
         SetupToggleButtonHandler();
 
     }
 
-    private void CheckIfComingFromNumberPicker() {
-        Intent intent = getIntent();
-        if(intent !=null) {
-            String trackerNumber = intent.getStringExtra(Constants.CallerNumber);
-            Logger.i(Constants.AppNameForLogging, "coming fron number picker");
-            if(trackerNumber !=null) {
-                EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
-                inputNumberPattern.setText(trackerNumber);
-            }
-        }
-    }
-
-    private void ChekIfServiceRunning() {
+    private void CheckIfServiceRunning() {
         if(BackgroundService.number != null)
         {
             Logger.i(Constants.AppNameForLogging, "Service is running");
             EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
             inputNumberPattern.setText(BackgroundService.number);
+            ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+            toggle.setChecked(true);
         }
     }
 
@@ -66,34 +44,12 @@ public class MainActivity extends Activity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), NumberPickerActivity.class);
-                startActivity(i);
+                startActivityForResult(i,Constants.NumberPickerIntent);
             }
         });
     }
 
 
-    /*private ServiceConnection mConnection = new ServiceConnection() {
-
-        public void onServiceConnected(ComponentName className,
-                                       IBinder binder) {
-            BackgroundService.MyBinder b = (BackgroundService.MyBinder) binder;
-            s = b.getService();
-            String number = s.getTracker();
-        *//*Intent intent = getIntent();
-        if(intent !=null)
-        {
-            String trackerNumber = intent.getStringExtra(Constants.CallerNumber);
-            EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
-            inputNumberPattern.setText(trackerNumber);
-        }*//*
-
-
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-            s = null;
-        }
-    };*/
     private void SetupToggleButtonHandler()
     {
         ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
@@ -101,35 +57,28 @@ public class MainActivity extends Activity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
 
-
-                /*SmsManager smsManager = SmsManager.getDefault();
-                smsManager.sendTextMessage("5554", null, "hello world", null, null);*/
-
-                /*Uri uri = Uri.parse("smsto:5554");
-                Intent it = new Intent(Intent.ACTION_SENDTO, uri);
-                it.putExtra("sms_body", "The SMS text");
-                startActivity(it);*/
-
                 if (isChecked) {
                     // The toggle is enabled
                     String number = inputNumberPattern.getText().toString();
 
+                    SharedPreferences settings = getSharedPreferences(Constants.SharedPreferencesFile, 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString(Constants.CallerNumber, number);
+                    editor.commit();
+
                     Logger.i(Constants.AppNameForLogging, "Registering incoming call listener");
                     Context context = getApplicationContext();
-
-                    Intent i= new Intent(context, BackgroundService.class);
-                    i.putExtra(Constants.CallerNumber, number);
+                    Intent i = new Intent(context, BackgroundService.class);
                     context.startService(i);
 
-                    ShowToast(true,number);
+                    ShowToast(true, number);
 
                 } else {
-                    Logger.i(Constants.AppNameForLogging, "Deregistering incoming call listener");
+                    Logger.i(Constants.AppNameForLogging, "De-registering incoming call listener");
                     Context context = getApplicationContext();
-                    Intent i= new Intent(context, BackgroundService.class);
+                    Intent i = new Intent(context, BackgroundService.class);
                     context.stopService(i);
-                    ShowToast(false,null);
-
+                    ShowToast(false, null);
                 }
             }
         });
@@ -156,21 +105,19 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    /*@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if(intent ==null)
+            return;
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        String trackerNumber = intent.getStringExtra(Constants.CallerNumber);
+        Logger.i(Constants.AppNameForLogging, "Coming from number picker");
+        if(trackerNumber !=null) {
+            EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
+            inputNumberPattern.setText(trackerNumber);
         }
-
-        return super.onOptionsItemSelected(item);
-    }*/
-
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
