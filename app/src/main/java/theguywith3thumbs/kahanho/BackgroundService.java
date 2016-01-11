@@ -16,6 +16,7 @@ public class BackgroundService extends Service {
     private final IBinder mBinder = new MyBinder();
     TelephonyManager telephony;
     static String number; // hack to check if service is running
+    static boolean isMissedCallProcessed;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         SharedPreferences settings = getSharedPreferences(Constants.SharedPreferencesFile, 0);

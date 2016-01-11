@@ -26,6 +26,7 @@ public class InComingCallListener extends PhoneStateListener {
                 if (CallMissed() && BackgroundService.number.equalsIgnoreCase(incomingNumber))
                 {
                     Logger.i(Constants.AppNameForLogging, "Call missed from tracker number " + incomingNumber);
+                    BackgroundService.isMissedCallProcessed = false;
                     MobileServiceEnabler enabler = new MobileServiceEnabler();
                     if (enabler.isNetworkAvailable(activityContext))
                     {

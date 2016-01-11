@@ -61,6 +61,11 @@ public class LocationTracer {
 
     private void UploadLocation(Location location)
     {
+        if(BackgroundService.isMissedCallProcessed)
+            return;
+
+        BackgroundService.isMissedCallProcessed = true;
+
         double lat = location.getLatitude();
         double lon = location.getLongitude();
         Logger.i(Constants.AppNameForLogging,"Latitude= " + String.valueOf(lat));

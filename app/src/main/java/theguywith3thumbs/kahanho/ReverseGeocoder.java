@@ -44,7 +44,7 @@ public class ReverseGeocoder {
                     @Override
                     public void onResponse(String response) {
                         Logger.d(Constants.AppNameForLogging, "Got reverse geocoding response");
-                        Logger.v(Constants.AppNameForLogging, response);
+                        //Logger.v(Constants.AppNameForLogging, response);
                         SendMessage(response);
                     }
                 }, new Response.ErrorListener() {
@@ -68,6 +68,7 @@ public class ReverseGeocoder {
     }
     private void SendSms(String msg)
     {
+
         SmsManager smsManager = SmsManager.getDefault();
         smsManager.sendTextMessage(BackgroundService.number, null, msg, null, null);
 
@@ -76,6 +77,8 @@ public class ReverseGeocoder {
             MobileServiceEnabler enabler = new MobileServiceEnabler();
             enabler.toggleMobileData(activityContext,false);
         }
+
+
     }
 
     private void SendNotification(String title, String msg)

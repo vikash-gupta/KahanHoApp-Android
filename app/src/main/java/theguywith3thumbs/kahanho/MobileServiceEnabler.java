@@ -4,6 +4,8 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.telephony.TelephonyManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -16,6 +18,10 @@ public class MobileServiceEnabler {
 
     public void toggleMobileData(Context context, boolean enabled) {
 
+        /*if(Build.VERSION.SDK_INT >19) {
+            setMobileDataState(enabled, context);
+            return;
+        }*/
 
         final ConnectivityManager conman =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -45,6 +51,7 @@ public class MobileServiceEnabler {
     }
 
     public boolean isNetworkAvailable(Context context) {
+
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -55,5 +62,26 @@ public class MobileServiceEnabler {
     {
         WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(status);
+    }
+
+
+
+    public void setMobileDataState(boolean mobileDataEnabled, Context context)
+    {
+        try
+        {
+            TelephonyManager telephonyService = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+
+            Method setMobileDataEnabledMethod = telephonyService.getClass().getDeclaredMethod("setDataEnabled", boolean.class);
+
+            if (null != setMobileDataEnabledMethod)
+            {
+                setMobileDataEnabledMethod.invoke(telephonyService, mobileDataEnabled);
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.e(Constants.AppNameForLogging, "Error setting mobile data state" + ex.getLocalizedMessage());
+        }
     }
 }
