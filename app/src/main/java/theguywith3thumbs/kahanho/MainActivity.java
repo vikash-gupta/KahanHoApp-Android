@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
@@ -13,14 +14,23 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 
 public class MainActivity extends Activity {
 
+    private Tracker mTracker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        mTracker = application.getDefaultTracker();
+
+        SendScreenHitAnalytics("Main");
+        SetupFeedbackButtonClickHandler();
         CheckIfServiceRunning();
         SetupButtonClickHandler();
         SetupToggleButtonHandler();
@@ -38,17 +48,49 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void SendScreenHitAnalytics(String name)
+    {
+        mTracker.setScreenName(name);
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+    }
     private void SetupButtonClickHandler() {
 
         final Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                SendScreenHitAnalytics("Number Picker");
                 Intent i = new Intent(getApplicationContext(), NumberPickerActivity.class);
-                startActivityForResult(i,Constants.NumberPickerIntent);
+                startActivityForResult(i, Constants.NumberPickerIntent);
             }
         });
     }
 
+    private void SetupFeedbackButtonClickHandler() {
+
+        final Button button = (Button) findViewById(R.id.feedback);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String name ="Feedback";
+
+                Logger.i(Constants.AppNameForLogging,"Setting screen name: " + name);
+                mTracker.setScreenName(name);
+                mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("market://details?id=" + getPackageName()));
+                if(intent.resolveActivity(getPackageManager()) != null)
+                    startActivity(intent);
+                else
+                {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id="+ getPackageName()));
+                    if(browserIntent.resolveActivity(getPackageManager()) != null)
+                        startActivity(browserIntent);
+                }
+
+            }
+        });
+    }
 
     private void SetupToggleButtonHandler()
     {
@@ -73,12 +115,21 @@ public class MainActivity extends Activity {
 
                     ShowToast(true, number);
 
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Tracking")
+                            .setAction("Started")
+                            .build());
+
                 } else {
                     Logger.i(Constants.AppNameForLogging, "De-registering incoming call listener");
                     Context context = getApplicationContext();
                     Intent i = new Intent(context, BackgroundService.class);
                     context.stopService(i);
                     ShowToast(false, null);
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("Tracking")
+                            .setAction("Stopped")
+                            .build());
                 }
             }
         });

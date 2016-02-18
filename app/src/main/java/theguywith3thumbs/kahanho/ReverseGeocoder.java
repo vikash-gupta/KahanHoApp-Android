@@ -14,6 +14,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -22,16 +24,20 @@ import org.json.JSONObject;
 public class ReverseGeocoder {
     private Context activityContext;
     private String baseURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    private Notifier notifier;
+    private Tracker mTracker;
 
     public ReverseGeocoder(Context context)
     {
         activityContext = context;
+        mTracker = ((AnalyticsApplication) activityContext.getApplicationContext()).getDefaultTracker();
     }
 
     public void Geocode(double lat, double lon)
     {
         baseURL += String.valueOf(lat) + ',' + String.valueOf(lon);
         Logger.i(Constants.AppNameForLogging, "inside reverse geocoding");
+        notifier = new Notifier(activityContext);
         sendRequest();
     }
 
@@ -64,7 +70,7 @@ public class ReverseGeocoder {
     {
         String msg = "Couldn't get street address, follow link to get my current location " + baseURL;
         SendSms(msg);
-        SendNotification("Location not sent","Reverse geo-coding error");
+        notifier.SendNotification("Location not sent", "Reverse geo-coding error");
     }
     private void SendSms(String msg)
     {
@@ -78,35 +84,14 @@ public class ReverseGeocoder {
             enabler.toggleMobileData(activityContext,false);
         }
 
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("MissedCall")
+                .setAction("SMSSent")
+                .build());
 
     }
 
-    private void SendNotification(String title, String msg)
-    {
-        Intent intent = new Intent(activityContext, MainActivity.class);
-        //PendingIntent pIntent = PendingIntent.getActivity(activityContext, (int) System.currentTimeMillis(), intent, 0); TODO
 
-        Notification.Builder builder = new Notification.Builder(activityContext)
-                .setContentTitle(title)
-                .setContentText(msg)
-                .setSmallIcon(R.mipmap.ic_launcher)
-                //.setContentIntent(pIntent)
-                ;
-
-        Notification noti;
-        if (Build.VERSION.SDK_INT < 16) {
-            noti = builder.getNotification();
-        } else {
-            noti = builder.build();
-        }
-
-        NotificationManager notificationManager = (NotificationManager) activityContext.
-                getSystemService(activityContext.NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        notificationManager.notify(0, noti);
-    }
     private void SendMessage(String location)
     {
         String address = null;
@@ -129,7 +114,7 @@ public class ReverseGeocoder {
         Logger.i(Constants.AppNameForLogging, "Sending current location: " + address + " to " + BackgroundService.number);
 
         SendSms("My current location is " + address);
-        SendNotification("Location sent to " + BackgroundService.number,address);
+        notifier.SendNotification("Location sent to " + BackgroundService.number,address);
 
     }
 }

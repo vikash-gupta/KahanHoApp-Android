@@ -7,6 +7,9 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,16 +40,15 @@ public class MobileServiceEnabler {
             setMobileDataEnabledMethod.setAccessible(true);
 
             setMobileDataEnabledMethod.invoke(iConnectivityManager, enabled);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Logger.e(Constants.AppNameForLogging,e.toString());
+            Tracker mTracker = ((AnalyticsApplication) context.getApplicationContext()).getDefaultTracker();
+            mTracker.send(new HitBuilders.EventBuilder()
+                    .setCategory("MissedCall")
+                    .setAction("Error:DataDisabled")
+                    .build());
+            Notifier notifier = new Notifier(context);
+            notifier.SendNotification("Location not found", "Enable Data from Android Settings");
         }
     }
 

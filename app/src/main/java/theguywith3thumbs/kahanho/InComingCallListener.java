@@ -5,17 +5,23 @@ import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.HitBuilders;
+import com.google.android.gms.analytics.Tracker;
+
 
 public class InComingCallListener extends PhoneStateListener {
 
     private Context activityContext;
     boolean ring = false;
     boolean callReceived = false;
+    private Tracker mTracker;
 
     public InComingCallListener(Context context)
     {
         activityContext = context;
         Logger.i(Constants.AppNameForLogging, "InComingCallListener");
+        mTracker = ((AnalyticsApplication) activityContext.getApplicationContext()).getDefaultTracker();
     }
 
     public void onCallStateChanged(int state, String incomingNumber) {
@@ -26,6 +32,10 @@ public class InComingCallListener extends PhoneStateListener {
                 if (CallMissed() && BackgroundService.number.equalsIgnoreCase(incomingNumber))
                 {
                     Logger.i(Constants.AppNameForLogging, "Call missed from tracker number " + incomingNumber);
+                    mTracker.send(new HitBuilders.EventBuilder()
+                            .setCategory("MissedCall")
+                            .setAction("Received")
+                            .build());
                     BackgroundService.isMissedCallProcessed = false;
                     MobileServiceEnabler enabler = new MobileServiceEnabler();
                     if (enabler.isNetworkAvailable(activityContext))
@@ -45,6 +55,7 @@ public class InComingCallListener extends PhoneStateListener {
                     }
                 }
                 Logger.i(Constants.AppNameForLogging, "call missed = " + CallMissed() + "tracker =" + BackgroundService.number);
+
                 ring = callReceived = false;
                 break;
             case TelephonyManager.CALL_STATE_OFFHOOK:

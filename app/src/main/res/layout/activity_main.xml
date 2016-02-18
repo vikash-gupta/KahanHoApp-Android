@@ -46,4 +46,13 @@
         android:layout_alignBottom="@+id/toggleButton"
         android:layout_alignRight="@+id/textView"
         android:layout_alignEnd="@+id/textView" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please give feedback"
+        android:id="@+id/feedback"
+        android:layout_marginBottom="73dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toRightOf="@+id/toggleButton" />
 </RelativeLayout>

@@ -1,0 +1,45 @@
+{
+  "project_info": {
+    "project_id": "kahanhoapp-10c78",
+    "project_number": "19138226619",
+    "name": "KahanHoApp"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:19138226619:android:55961bd3b41f0901",
+        "client_id": "android:theguywith3thumbs.kahanho",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "theguywith3thumbs.kahanho"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 2,
+          "analytics_property": {
+            "tracking_id": "UA-73884557-1"
+          }
+        },
+        "cloud_messaging_service": {
+          "status": 1,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "google_signin_service": {
+          "status": 1
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}
