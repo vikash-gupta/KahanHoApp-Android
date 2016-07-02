@@ -9,7 +9,7 @@ android {
         applicationId "theguywith3thumbs.kahanho"
         minSdkVersion 15
         targetSdkVersion 23
-        versionCode 4
+        versionCode 5
         versionName "0.9"
     }
     buildTypes {

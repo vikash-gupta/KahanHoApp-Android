@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -30,7 +31,7 @@ public class MainActivity extends Activity {
         mTracker = application.getDefaultTracker();
 
         SendScreenHitAnalytics("Main");
-        SetupFeedbackButtonClickHandler();
+        //SetupFeedbackButtonClickHandler();
         CheckIfServiceRunning();
         SetupButtonClickHandler();
         SetupToggleButtonHandler();
@@ -43,7 +44,7 @@ public class MainActivity extends Activity {
             Logger.i(Constants.AppNameForLogging, "Service is running");
             EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
             inputNumberPattern.setText(BackgroundService.number);
-            ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+            Switch toggle = (Switch) findViewById(R.id.switch1);
             toggle.setChecked(true);
         }
     }
@@ -66,35 +67,34 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void SetupFeedbackButtonClickHandler() {
+    /*private void SetupFeedbackButtonClickHandler() {
 
         final Button button = (Button) findViewById(R.id.feedback);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String name ="Feedback";
+                String name = "Feedback";
 
-                Logger.i(Constants.AppNameForLogging,"Setting screen name: " + name);
+                Logger.i(Constants.AppNameForLogging, "Setting screen name: " + name);
                 mTracker.setScreenName(name);
                 mTracker.send(new HitBuilders.ScreenViewBuilder().build());
 
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("market://details?id=" + getPackageName()));
-                if(intent.resolveActivity(getPackageManager()) != null)
+                if (intent.resolveActivity(getPackageManager()) != null)
                     startActivity(intent);
-                else
-                {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id="+ getPackageName()));
-                    if(browserIntent.resolveActivity(getPackageManager()) != null)
+                else {
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + getPackageName()));
+                    if (browserIntent.resolveActivity(getPackageManager()) != null)
                         startActivity(browserIntent);
                 }
 
             }
         });
-    }
+    }*/
 
     private void SetupToggleButtonHandler()
     {
-        ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleButton);
+        Switch toggle = (Switch) findViewById(R.id.switch1);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 EditText inputNumberPattern = (EditText) findViewById(R.id.numberRegex);
@@ -102,7 +102,15 @@ public class MainActivity extends Activity {
                 if (isChecked) {
                     // The toggle is enabled
                     String number = inputNumberPattern.getText().toString();
-
+                    if(number.isEmpty() || number == null || number  == "")
+                    {
+                        ShowToast("Enter caller number first!");
+                        mTracker.send(new HitBuilders.EventBuilder()
+                                .setCategory("Tracking")
+                                .setAction("NoNumber")
+                                .build());
+                        return;
+                    }
                     SharedPreferences settings = getSharedPreferences(Constants.SharedPreferencesFile, 0);
                     SharedPreferences.Editor editor = settings.edit();
                     editor.putString(Constants.CallerNumber, number);
@@ -113,7 +121,7 @@ public class MainActivity extends Activity {
                     Intent i = new Intent(context, BackgroundService.class);
                     context.startService(i);
 
-                    ShowToast(true, number);
+                    ShowToast("Tracking is turned on");
 
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory("Tracking")
@@ -125,7 +133,7 @@ public class MainActivity extends Activity {
                     Context context = getApplicationContext();
                     Intent i = new Intent(context, BackgroundService.class);
                     context.stopService(i);
-                    ShowToast(false, null);
+                    //ShowToast(false, null);
                     mTracker.send(new HitBuilders.EventBuilder()
                             .setCategory("Tracking")
                             .setAction("Stopped")
@@ -135,17 +143,8 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void ShowToast(boolean registered, String number)
+    private void ShowToast(String msg)
     {
-        String msg = "Tracking on missed call ";
-        if(registered) {
-            msg += "from " + number + " on";
-        }
-        else
-        {
-            msg += "off";
-        }
-
         Toast toast = Toast.makeText(this, msg, Toast.LENGTH_SHORT);
         toast.show();
     }

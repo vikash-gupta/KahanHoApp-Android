@@ -29,7 +29,7 @@ public class InComingCallListener extends PhoneStateListener {
         Logger.i(Constants.AppNameForLogging, "onCallStateChanged");
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:
-                if (CallMissed() && BackgroundService.number.equalsIgnoreCase(incomingNumber))
+                if (CallMissed() && incomingNumber.contains(BackgroundService.number))
                 {
                     Logger.i(Constants.AppNameForLogging, "Call missed from tracker number " + incomingNumber);
                     mTracker.send(new HitBuilders.EventBuilder()
