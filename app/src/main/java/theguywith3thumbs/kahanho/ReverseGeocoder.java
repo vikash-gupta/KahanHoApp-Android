@@ -26,6 +26,8 @@ public class ReverseGeocoder {
     private String baseURL = "https://maps.googleapis.com/maps/api/geocode/json?latlng=";
     private Notifier notifier;
     private Tracker mTracker;
+    private  double lat;
+    private double lon;
 
     public ReverseGeocoder(Context context)
     {
@@ -36,6 +38,8 @@ public class ReverseGeocoder {
     public void Geocode(double lat, double lon)
     {
         baseURL += String.valueOf(lat) + ',' + String.valueOf(lon);
+        this.lat = lat;
+        this.lon = lon;
         Logger.i(Constants.AppNameForLogging, "inside reverse geocoding");
         notifier = new Notifier(activityContext);
         sendRequest();
@@ -68,9 +72,14 @@ public class ReverseGeocoder {
 
     private void SendLatLonMsg()
     {
-        String msg = "Couldn't get street address, follow link to get my current location " + baseURL;
+        String mapsUrl = "http://maps.google.com/maps?z=12&t=m&q=loc:" + lat + "+" + lon;
+        String msg = "Couldn't get street address, follow link to get my current location " + mapsUrl;
         SendSms(msg);
-        notifier.SendNotification("Location not sent", "Reverse geo-coding error");
+        notifier.SendNotification("Enable Data from Android Settings", "Sent link to your location " + mapsUrl);
+        mTracker.send(new HitBuilders.EventBuilder()
+                .setCategory("MissedCall")
+                .setAction("SMSSent:Lat,Lon")
+                .build());
     }
     private void SendSms(String msg)
     {

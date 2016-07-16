@@ -47,8 +47,10 @@ public class MobileServiceEnabler {
                     .setCategory("MissedCall")
                     .setAction("Error:DataDisabled")
                     .build());
-            Notifier notifier = new Notifier(context);
-            notifier.SendNotification("Location not found", "Enable Data from Android Settings");
+            //Notifier notifier = new Notifier(context);
+            //notifier.SendNotification("Location not found", "Enable Data from Android Settings");
+            LocationTracer tracer = new LocationTracer(context);
+            tracer.GetLocation();
         }
     }
 
