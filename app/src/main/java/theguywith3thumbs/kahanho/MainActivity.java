@@ -57,14 +57,14 @@ public class MainActivity extends Activity {
     }
     private void SetupButtonClickHandler() {
 
-        final Button button = (Button) findViewById(R.id.button);
+        /*final Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 SendScreenHitAnalytics("Number Picker");
                 Intent i = new Intent(getApplicationContext(), NumberPickerActivity.class);
                 startActivityForResult(i, Constants.NumberPickerIntent);
             }
-        });
+        });*/
     }
 
     /*private void SetupFeedbackButtonClickHandler() {

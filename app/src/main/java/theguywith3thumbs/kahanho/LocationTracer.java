@@ -33,24 +33,36 @@ public class LocationTracer {
             if(provider.equals(LocationManager.GPS_PROVIDER) || provider.equals(LocationManager.NETWORK_PROVIDER))
                 mLocationManager.requestSingleUpdate(provider, mLocationListener, null);
             else
-                NotifyError();
+                NotifyError("NoLocationProviderPresent");
         }
         catch(SecurityException e)
         {
             Logger.e(Constants.AppNameForLogging,"Couldn't get location");
             Logger.e(Constants.AppNameForLogging,e.toString());
-            NotifyError();
+            NotifyError("NoLocationPermissionPresent");
+        }
+        catch(IllegalArgumentException e)
+        {
+            Logger.e(Constants.AppNameForLogging,"Couldn't get location");
+            Logger.e(Constants.AppNameForLogging,e.toString());
+            NotifyError("LocationProviderNullException");
+        }
+        catch(Exception e)
+        {
+            Logger.e(Constants.AppNameForLogging,"Couldn't get location");
+            Logger.e(Constants.AppNameForLogging,e.toString());
+            NotifyError("GetLocationGeneralException");
         }
     }
 
-    private void NotifyError()
+    private void NotifyError(String error)
     {
         Notifier notifier = new Notifier(activityContext);
         notifier.SendNotification("Location not found", "Enable location sharing from Android Settings");
         Tracker mTracker = ((AnalyticsApplication) activityContext.getApplicationContext()).getDefaultTracker();
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("MissedCall")
-                .setAction("Error:Settings")
+                .setAction(error)
                 .build());
         Logger.e(Constants.AppNameForLogging, "Location not found");
     }

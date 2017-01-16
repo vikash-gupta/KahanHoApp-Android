@@ -16,6 +16,7 @@ public class InComingCallListener extends PhoneStateListener {
     boolean ring = false;
     boolean callReceived = false;
     private Tracker mTracker;
+    private String inComingNumber = "";
 
     public InComingCallListener(Context context)
     {
@@ -26,10 +27,10 @@ public class InComingCallListener extends PhoneStateListener {
 
     public void onCallStateChanged(int state, String incomingNumber) {
 
-        Logger.i(Constants.AppNameForLogging, "onCallStateChanged");
+        Logger.i(Constants.AppNameForLogging, "onCallStateChanged" + incomingNumber );
         switch (state) {
             case TelephonyManager.CALL_STATE_IDLE:
-                if (CallMissed() && incomingNumber.contains(BackgroundService.number))
+                if (CallMissed() && inComingNumber.contains(BackgroundService.number))
                 {
                     Logger.i(Constants.AppNameForLogging, "Call missed from tracker number " + incomingNumber);
                     mTracker.send(new HitBuilders.EventBuilder()
@@ -65,8 +66,8 @@ public class InComingCallListener extends PhoneStateListener {
                 break;
             case TelephonyManager.CALL_STATE_RINGING:
                 Logger.i(Constants.AppNameForLogging, "CALL_STATE_RINGING");
+                inComingNumber = incomingNumber;
                 ring = true;
-
                 break;
         }
     }
