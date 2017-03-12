@@ -3,15 +3,11 @@ package theguywith3thumbs.kahanho;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
-import android.os.Build;
-import android.telephony.TelephonyManager;
 
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -62,7 +58,7 @@ public class MobileServiceEnabler {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void toggleWifi(Context context, boolean status)
+    /*private void toggleWifi(Context context, boolean status)
     {
         WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
         wifiManager.setWifiEnabled(status);
@@ -87,5 +83,5 @@ public class MobileServiceEnabler {
         {
             Logger.e(Constants.AppNameForLogging, "Error setting mobile data state" + ex.getLocalizedMessage());
         }
-    }
+    }*/
 }
